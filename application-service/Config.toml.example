@@ -1,0 +1,6 @@
+[wso2_office_booking_service.database.databaseConfig]
+    host = "127.0.0.1"
+    user = ""
+    password = ""
+    name = ""
+    port = 3306
