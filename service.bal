@@ -54,58 +54,6 @@ service / on new http:Listener(9090) {
            
     }
 
-    # Description
-    #
-    # + req - Parameter Description
-    # format of the body of the request
-    # {
-    # "requestType" : "Identity",
-    # "requestedBy" : "Name",
-    # "userEmail" : "user@abc.com",
-    # "gnDomain" : "514",
-    # "reason" : "The reason for the request"
-    # }
-    # + return - Return Value Description
-    resource function post addRequest (http:Request req) returns http:Response|error{
-      json payload = check req.getJsonPayload();
-      log:printInfo(payload.toString());
-
-      request request = {
-        createdAt: time:utcToString(time:utcNow()),
-        lastUpdatedAt: time:utcToString(time:utcNow()),
-        requestedDate: time:utcToString(time:utcNow()).substring(0,10),
-        requestType: <string> check payload.requestType,
-        requestedBy: <string> check payload.requestedBy,
-        userEmail: <string> check payload.userEmail,
-        gnDomain: <string> check payload.gnDomain,
-        reason: <string> check payload.reason,
-        identityVerificationStatus: false, 
-        addressVerificationStatus: false, 
-        policeVerificationStatus: false, 
-        overallStatus: "Pending"
-        };
-
-      // write to cosmos db
-    //   int req_id = check azureCosmosClient->getDocumentList
-        string partitionKey = "25000";
-      cosmosdb:DocumentResponse|error result = check azureCosmosClient->createDocument ("grama-db","requestContainer", partitionKey, request, partitionKey);
-      if (result is error) {
-          log:printError(result.message());
-          http:Response response = new;
-          response.statusCode = 500;
-          response.setPayload({"error":result.message()});
-          return response;
-      }
-      else {
-          log:printInfo(result.toString());
-          log:printInfo("Success!");
-          http:Response response = new;
-          response.statusCode = 200;
-          response.setPayload({"message":"success"});
-          return response;
-      }
-  }
-
   resource function put setStatusOfRequest (http:Request req) returns http:Response|error{
       json payload = check req.getJsonPayload();
       log:printInfo(payload.toString());
