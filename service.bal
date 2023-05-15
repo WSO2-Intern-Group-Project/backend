@@ -2,7 +2,7 @@ import ballerina/http;
 import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/time;
-import ballerina/uuid;
+
 configurable config cosmosConfig = ?;
 
 final cosmosdb:ConnectionConfig configuration = {
@@ -86,7 +86,8 @@ service / on new http:Listener(9090) {
         };
 
       // write to cosmos db
-      string partitionKey = uuid:createType1AsString();
+    //   int req_id = check azureCosmosClient->getDocumentList
+        string partitionKey = "25000";
       cosmosdb:DocumentResponse|error result = check azureCosmosClient->createDocument ("grama-db","requestContainer", partitionKey, request, partitionKey);
       if (result is error) {
           log:printError(result.message());
