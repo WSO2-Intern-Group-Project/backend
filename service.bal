@@ -13,16 +13,6 @@ final cosmosdb:DataPlaneClient azureCosmosClient = check new (configuration);
 
 # A service representing a network-accessible API
 # bound to port `9090`.
-
-@http:ServiceConfig {
-    cors: {
-        allowOrigins: ["*"],
-        allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-        allowHeaders: ["Authorization", "Content-Type", "Content-Type", "Accept", "JWTAssertion"],
-        allowCredentials: false,
-        maxAge: 84900
-    }
-}
 service / on new http:Listener(9090) {
 
     resource function get requestsByUser(string userEmail) returns json[]|error {
