@@ -1,7 +1,5 @@
 import ballerina/http;
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/log;
-import ballerina/time;
 
 configurable config cosmosConfig = ?;
 
@@ -53,46 +51,6 @@ service / on new http:Listener(9090) {
         // return [];
            
     }
-
-  resource function put setStatusOfRequest (http:Request req) returns http:Response|error{
-      json payload = check req.getJsonPayload();
-      log:printInfo(payload.toString());
-
-      request request = {
-        createdAt: <string> check payload.createdAt,
-        lastUpdatedAt: time:utcToString(time:utcNow()),
-        requestedDate: <string> check payload.requestedDate,
-        requestType: <string> check payload.requestType,
-        requestedBy: <string> check payload.requestedBy,
-        userEmail: <string> check payload.userEmail,
-        gnDomain: <string> check payload.gnDomain,
-        reason: <string> check payload.reason,
-        identityVerificationStatus: <boolean> check payload.identityVerificationStatus, 
-        addressVerificationStatus: <boolean> check payload.addressVerificationStatus,
-        policeVerificationStatus: <boolean> check payload.policeVerificationStatus, 
-        overallStatus: <string> check payload.overallStatus
-        };
-
-        // write to cosmos db
-      string partitionKey = <string> check payload.id;
-      cosmosdb:DocumentResponse|error result = check azureCosmosClient->replaceDocument("grama-db","requestContainer", partitionKey, request, partitionKey);
-      if (result is error) {
-          log:printError(result.message());
-          http:Response response = new;
-          response.statusCode = 500;
-          response.setPayload({"error":result.message()});
-          return response;
-      }
-      else {
-          log:printInfo(result.toString());
-          log:printInfo("Success!");
-          http:Response response = new;
-          response.statusCode = 200;
-          response.setPayload({"message":"success"});
-          return response;
-      }
-  }
-
 }
 
 
